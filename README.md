@@ -11,7 +11,11 @@ Microservice c: Apply the penalties if the driver not driving in a behave manner
 # Implementation
 Three different microservices are implemented.
 
-Microservice a provides RESTful APIs for all the crud functionality of the system. The code of the microservice a can be found in the following link.
+Microservice a provides RESTful APIs for all the crud functionality of the system. You can use the end points using the following url: 
+
+http://localhost:8081/swagger-ui/.
+
+The code of the microservice a can be found in the following link.
 
 https://github.com/giorgossakkas/trg/tree/main/microservice_a
 

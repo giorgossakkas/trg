@@ -18,7 +18,7 @@ services:
     ports:
       - '8082:8080'
     environment:
-      - ORG_TRG_MICROSERVICEARESTCLIENT_MP_REST_URL=http://microservice_a:8081/
+      - ORG_TRG_MICROSERVICEARESTCLIENT_MP_REST_URL=http://microservice_a:8080/
     depends_on:
       - microservice_a
   microservice_c:
