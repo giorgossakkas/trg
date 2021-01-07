@@ -7,6 +7,7 @@ public class CarRepresentation {
 	private long id;
 	private String brand;
 	private String type;
+	private String licensePlates;
 	private DriverRepresenation driver;
 	
 	public long getCreatedDate() {
@@ -44,6 +45,12 @@ public class CarRepresentation {
 	}
 	public void setDriver(DriverRepresenation driver) {
 		this.driver = driver;
+	}
+	public String getLicensePlates() {
+		return licensePlates;
+	}
+	public void setLicensePlates(String licensePlates) {
+		this.licensePlates = licensePlates;
 	}
 	
 	

@@ -6,14 +6,12 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -24,11 +22,8 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.json.JSONObject;
 import org.trg.dataobjects.Car;
 import org.trg.dataobjects.Trip;
-import org.trg.interfaces.CarDao;
-import org.trg.interfaces.TripDao;
-
-import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Sort;
+import org.trg.repositories.CarRepository;
+import org.trg.repositories.TripRepository;
 
 /**
  * @author Giorgos Sakkas
@@ -42,10 +37,10 @@ import io.quarkus.panache.common.Sort;
 public class TripResource extends Resource{
 
 	@Inject
-	TripDao tripDao;
+	TripRepository tripRepository;
 	
 	@Inject
-	CarDao carDao;
+	CarRepository carRepository;
 
     /**
      * This method implements the functionality of retrieving the information of a trip based on an id
@@ -58,7 +53,7 @@ public class TripResource extends Resource{
     @Counted(name = "readTrip", description = "How many times the read trip api is called.")
     @Timed(name = "readTripTimer", description = "A measure of how long it takes to read a trip.", unit = MetricUnits.MILLISECONDS)
     public Response get(@PathParam("id") Long id){
-    	Trip trip = tripDao.get(id);
+    	Trip trip = tripRepository.findById(id);
         if (trip == null) 
         {
             throw new WebApplicationException(404);
@@ -67,24 +62,16 @@ public class TripResource extends Resource{
     }
 
     /**
-     * This method implements the functionality of retrieving a list of trips based on a set of condition
-     * @param sort - The trips that will be retrieved are sort with the specified parameter
-     * @param page - The trips that will be retrieved belongs to specified page. (Default 1st page)
-     * @param size - The number of trips that will retrieved. (Default 20)
+     * This method implements the functionality of retrieving a list of all trips
      * @return a json array of the trips 
      *
      */
     @GET
     @Counted(name = "listTrips", description = "How many times the list trips api is called.")
     @Timed(name = "listTripsTimer", description = "A measure of how long it takes to list trips.", unit = MetricUnits.MILLISECONDS)
-    public Response list(@QueryParam("sort") List<String> sortQuery,
-            @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize) {
+    public Response list() {
 
-    	 Page page = Page.of(pageIndex, pageSize);
-         Sort sort = getSortFromQuery(sortQuery);
-         List<Trip> trips = tripDao.list(page, sort);
-         
+         List<Trip> trips = tripRepository.listAll();
 
          return Response.status(Response.Status.OK).entity(trips).build();
     }
@@ -106,7 +93,7 @@ public class TripResource extends Resource{
 		
     	trip = copyValues(trip, new JSONObject(tripStr));
     	validate(trip);
-		trip = tripDao.add(trip);
+    	tripRepository.persist(trip);
     	
 		JSONObject response = new JSONObject();
 		response.put("id", trip.getId());
@@ -135,7 +122,7 @@ public class TripResource extends Resource{
     	
     	if (tripJSON.has("car_id"))
     	{
-        	Car car = carDao.get(tripJSON.getLong("car_id"));
+        	Car car = carRepository.findById(tripJSON.getLong("car_id"));
             if (car == null) 
             {
                 throw new WebApplicationException(404);
@@ -160,7 +147,7 @@ public class TripResource extends Resource{
     @Timed(name = "updateTripTimer", description = "A measure of how long it takes to update a trip.", unit = MetricUnits.MILLISECONDS)
     public Response update(@PathParam("id") Long id, String tripStr) {
         
-    	Trip trip = tripDao.get(id);
+    	Trip trip = tripRepository.findById(id);
         if (trip == null) 
         {
             throw new WebApplicationException(404);
@@ -168,7 +155,7 @@ public class TripResource extends Resource{
     	
         trip = copyValues(trip, new JSONObject(tripStr));
     	validate(trip);
-        trip = tripDao.update(id, trip);
+    	tripRepository.persist(trip);
         
         JSONObject response = new JSONObject();
 		response.put("id", trip.getId());
@@ -188,10 +175,13 @@ public class TripResource extends Resource{
     @Timed(name = "deleteTripTimer", description = "A measure of how long it takes to delete a trip.", unit = MetricUnits.MILLISECONDS)
     public void delete(@PathParam("id") Long id) {
     	
-    	if (!carDao.delete(id)) 
-    	{
+    	Trip trip = tripRepository.findById(id);
+        if (trip == null) 
+        {
             throw new WebApplicationException(404);
         }
+        
+        tripRepository.delete(trip);
     }
 	
 }

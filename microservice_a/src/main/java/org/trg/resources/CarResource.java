@@ -6,14 +6,12 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -22,11 +20,8 @@ import org.json.JSONObject;
 import org.trg.dataobjects.Car;
 import org.trg.dataobjects.Driver;
 import org.trg.enums.CarType;
-import org.trg.interfaces.CarDao;
-import org.trg.interfaces.DriverDao;
-
-import io.quarkus.panache.common.Page;
-import io.quarkus.panache.common.Sort;
+import org.trg.repositories.CarRepository;
+import org.trg.repositories.DriverRepository;
 import org.eclipse.microprofile.metrics.MetricUnits;
 import org.eclipse.microprofile.metrics.annotation.Counted;
 import org.eclipse.microprofile.metrics.annotation.Timed;
@@ -43,10 +38,10 @@ import org.eclipse.microprofile.metrics.annotation.Timed;
 public class CarResource extends Resource{
 
 	@Inject
-	CarDao carDao;
+	CarRepository carRepository;
 	
 	@Inject
-	DriverDao driverDao;
+	DriverRepository driverRepository;
 
 	
     /**
@@ -61,7 +56,7 @@ public class CarResource extends Resource{
     @Counted(name = "readCar", description = "How many times the read car api is called.")
     @Timed(name = "readCarTimer", description = "A measure of how long it takes to get a car.", unit = MetricUnits.MILLISECONDS)
     public Response get(@PathParam("id") Long id){
-    	Car car = carDao.get(id);
+    	Car car = carRepository.findById(id);
         if (car == null) 
         {
             throw new WebApplicationException(404);
@@ -70,10 +65,7 @@ public class CarResource extends Resource{
     }
 
     /**
-     * This method implements the functionality of retrieving a list of cars based on a set of condition
-     * @param sort - The cars that will be retrieved are sort with the specified parameter
-     * @param page - The cars that will be retrieved belongs to specified page. (Default 1st page)
-     * @param size - The number of cars that will retrieved. (Default 20)
+     * This method implements the functionality of retrieving a list of all the cars
      * @return a json array of the cars 
      *
      */
@@ -81,13 +73,9 @@ public class CarResource extends Resource{
     @Produces("application/json")
     @Counted(name = "listCar", description = "How many times the list cars api is called.")
     @Timed(name = "listCarTimer", description = "A measure of how long it takes to list cars.", unit = MetricUnits.MILLISECONDS)
-    public Response list(@QueryParam("sort") List<String> sortQuery,
-            @QueryParam("page") @DefaultValue("0") int pageIndex,
-            @QueryParam("size") @DefaultValue("20") int pageSize) {
+    public Response list() {
 
-    	 Page page = Page.of(pageIndex, pageSize);
-         Sort sort = getSortFromQuery(sortQuery);
-         List<Car> cars = carDao.list(page, sort);
+         List<Car> cars = carRepository.listAll();
          
          return Response.status(Response.Status.OK).entity(cars).build();
     }
@@ -110,7 +98,7 @@ public class CarResource extends Resource{
     	
     	car = copyValues(car, new JSONObject(carStr));
     	validate(car);
-    	car = carDao.add(car);
+    	carRepository.persist(car);
     	
         JSONObject response = new JSONObject();
  		response.put("id", car.getId());
@@ -136,8 +124,8 @@ public class CarResource extends Resource{
     	
     	if (carJSON.has("driver_id"))
     	{
-        	Driver driver = driverDao.get(carJSON.getLong("driver_id"));
-            if (car == null) 
+        	Driver driver = driverRepository.findById(carJSON.getLong("driver_id"));
+            if (driver == null) 
             {
                 throw new WebApplicationException(404);
             }
@@ -163,7 +151,7 @@ public class CarResource extends Resource{
     @Timed(name = "updateCarTimer", description = "A measure of how long it takes to update a car.", unit = MetricUnits.MILLISECONDS)
     public Response update(@PathParam("id") Long id, String carStr) {
         
-    	Car car = carDao.get(id);
+    	Car car = carRepository.findById(id);
         if (car == null) 
         {
             throw new WebApplicationException(404);
@@ -171,7 +159,7 @@ public class CarResource extends Resource{
         
         car = copyValues(car, new JSONObject(carStr));
     	validate(car);
-        car = carDao.update(id, car);
+        carRepository.persist(car);
         
         JSONObject response = new JSONObject();
  		response.put("id", car.getId());
@@ -191,10 +179,13 @@ public class CarResource extends Resource{
     @Timed(name = "deleteCarTimer", description = "A measure of how long it takes to delete a car.", unit = MetricUnits.MILLISECONDS)
     public void delete(@PathParam("id") Long id) {
     	
-    	if (!carDao.delete(id)) 
-    	{
+    	Car car = carRepository.findById(id);
+        if (car == null) 
+        {
             throw new WebApplicationException(404);
         }
+    	
+        carRepository.delete(car);
     }
     
     /**
@@ -212,20 +203,20 @@ public class CarResource extends Resource{
     @Timed(name = "assignCarToDriverTimer", description = "A measure of how long it takes to assign a car to a driver a car.", unit = MetricUnits.MILLISECONDS)
     public Response assignCarToDriver(@PathParam("car_id") Long car_id, @PathParam("driver_id") Long driver_id) {
         
-    	Car car = carDao.get(car_id);
+    	Car car = carRepository.findById(car_id);
         if (car == null) 
         {
             throw new WebApplicationException(404);
         }
         
-        Driver driver = driverDao.get(driver_id);
+        Driver driver = driverRepository.findById(driver_id);
         if (driver == null) 
         {
             throw new WebApplicationException(404);
         }
         
         car.setDriver(driver);
-        car = carDao.update(car_id, car);
+        carRepository.persist(car);
         
         JSONObject response = new JSONObject();
  		response.put("id", car.getId());

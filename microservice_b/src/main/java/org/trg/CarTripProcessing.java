@@ -36,23 +36,7 @@ public class CarTripProcessing {
 	    logger.info("Process a trip: " + execution.getScheduledFireTime());
 	    try
 	    {
-		    int pageIndex = 0;
-		    int pageSize = 20;
-		    ArrayList<CarRepresentation> allCars = new ArrayList<CarRepresentation>();
-		    ArrayList<CarRepresentation> cars= null;
-		    
-		    logger.info("Retrieve all cars");
-		    do
-			{
-		    	cars = microserviceARestClient.listCars(null, pageIndex, pageSize);
-		    	
-	    		logger.info("Page "+pageIndex+" response: " + cars.toString());
-	    		
-	    		allCars.addAll(cars);
-
-				pageIndex++;
-			}
-			while(cars != null && cars.size() == pageSize);
+		    ArrayList<CarRepresentation> allCars = microserviceARestClient.listCars();
 		    
 		    logger.info(allCars.size()+ " cars retrieved");
 		    
