@@ -19,8 +19,8 @@ services:
       - '8082:8080'
     environment:
       - ORG_TRG_MICROSERVICEARESTCLIENT_MP_REST_URL=http://microservice_a:8081/
-  	depends_on:
-  	  - microservice_a
+    depends_on:
+      - microservice_a
   microservice_c:
     image: 'trgassessment/microservice_c:latest'
     container_name: microservice_c
