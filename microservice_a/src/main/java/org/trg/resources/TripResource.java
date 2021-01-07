@@ -47,6 +47,12 @@ public class TripResource extends Resource{
 	@Inject
 	CarDao carDao;
 
+    /**
+     * This method implements the functionality of retrieving the information of a trip based on an id
+     * @param id - The id of the trip that will be retrieved
+     * @throws WebApplicationException
+     * @return a json object representation of the trip
+     */
     @GET
     @Path("{id}")
     @Counted(name = "readTrip", description = "How many times the read trip api is called.")
@@ -60,6 +66,14 @@ public class TripResource extends Resource{
         return Response.status(Response.Status.OK).entity(trip).build();
     }
 
+    /**
+     * This method implements the functionality of retrieving a list of trips based on a set of condition
+     * @param sort - The trips that will be retrieved are sort with the specified parameter
+     * @param page - The trips that will be retrieved belongs to specified page. (Default 1st page)
+     * @param size - The number of trips that will retrieved. (Default 20)
+     * @return a json array of the trips 
+     *
+     */
     @GET
     @Counted(name = "listTrips", description = "How many times the list trips api is called.")
     @Timed(name = "listTripsTimer", description = "A measure of how long it takes to list trips.", unit = MetricUnits.MILLISECONDS)
@@ -75,6 +89,13 @@ public class TripResource extends Resource{
          return Response.status(Response.Status.OK).entity(trips).build();
     }
 
+
+    /**
+     * This method implements the functionality of creating a trip
+     * @param tripStr - The json object contains the information of the trip that will be created
+     * @return the id of the created trip 
+     *
+     */
     @Transactional
     @POST
     @Counted(name = "addTrip", description = "How many times the add trip api is called.")
@@ -125,6 +146,13 @@ public class TripResource extends Resource{
     	return trip;
     }
 
+    /**
+     * This method implements the functionality of updating a trip
+     * @param id - The id of the trip that will be updated
+     * @param tripStr - The json object contains the information of trip car that will be updated
+     * @return the id of the updated trip
+     *
+     */
     @Transactional
     @PUT
     @Path("{id}")
@@ -148,6 +176,11 @@ public class TripResource extends Resource{
 		return Response.status(Response.Status.OK).entity(response.toString()).build();
     }
 
+    /**
+     * This method implements the functionality of deleting a trip
+     * @param id - The id of the trip that will be deleted
+     *
+     */
     @Transactional
     @DELETE
     @Path("{id}")

@@ -42,6 +42,12 @@ public class DriverResource extends Resource{
 	@Inject
 	DriverDao driverDao;
 
+    /**
+     * This method implements the functionality of retrieving the information of a driver based on an id
+     * @param id - The id of the driver that will be retrieved
+     * @throws WebApplicationException
+     * @return a json object representation of the driver
+     */
     @GET
     @Path("{id}")
     @Counted(name = "readDriver", description = "How many times the read driver api is called.")
@@ -55,6 +61,14 @@ public class DriverResource extends Resource{
         return Response.status(Response.Status.OK).entity(driver).build();
     }
 
+    /**
+     * This method implements the functionality of retrieving a list of drivers based on a set of condition
+     * @param sort - The drivers that will be retrieved are sort with the specified parameter
+     * @param page - The drivers that will be retrieved belongs to specified page. (Default 1st page)
+     * @param size - The number of drivers that will retrieved. (Default 20)
+     * @return a json array of the drivers 
+     *
+     */
     @GET
     @Counted(name = "listDrivers", description = "How many times the list drivers api is called.")
     @Timed(name = "listDriversTimer", description = "A measure of how long it takes to list drivers.", unit = MetricUnits.MILLISECONDS)
@@ -69,6 +83,12 @@ public class DriverResource extends Resource{
 	     return Response.status(Response.Status.OK).entity(drivers).build();
     }
 
+    /**
+     * This method implements the functionality of creating a driver
+     * @param driverStr - The json object contains the information of the driver that will be created
+     * @return the id of the created driver 
+     *
+     */
     @Transactional
     @POST
     @Counted(name = "addDriver", description = "How many times the add a driver api is called.")
@@ -108,6 +128,14 @@ public class DriverResource extends Resource{
     	return driver;
     }
     
+    
+    /**
+     * This method implements the functionality of updating a driver
+     * @param id - The id of the driver that will be updated
+     * @param driverStr - The json object contains the information of driver car that will be updated
+     * @return the id of the updated driver
+     *
+     */
     @Transactional
     @PUT
     @Path("{id}")
@@ -135,6 +163,11 @@ public class DriverResource extends Resource{
     		
     }
 
+    /**
+     * This method implements the functionality of deleting a driver
+     * @param id - The id of the driver that will be deleted
+     *
+     */
     @Transactional
     @DELETE
     @Path("{id}")

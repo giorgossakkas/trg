@@ -48,6 +48,13 @@ public class CarResource extends Resource{
 	@Inject
 	DriverDao driverDao;
 
+	
+    /**
+     * This method implements the functionality of retrieving the information of a car based on an id
+     * @param id - The id of the car that will be retrieved
+     * @throws WebApplicationException
+     * @return a json object representation of the car
+     */
     @GET
     @Path("{id}")
     @Produces("application/json")
@@ -62,6 +69,14 @@ public class CarResource extends Resource{
         return Response.status(Response.Status.OK).entity(car).build();
     }
 
+    /**
+     * This method implements the functionality of retrieving a list of cars based on a set of condition
+     * @param sort - The cars that will be retrieved are sort with the specified parameter
+     * @param page - The cars that will be retrieved belongs to specified page. (Default 1st page)
+     * @param size - The number of cars that will retrieved. (Default 20)
+     * @return a json array of the cars 
+     *
+     */
     @GET
     @Produces("application/json")
     @Counted(name = "listCar", description = "How many times the list cars api is called.")
@@ -77,6 +92,12 @@ public class CarResource extends Resource{
          return Response.status(Response.Status.OK).entity(cars).build();
     }
 
+    /**
+     * This method implements the functionality of creating a car
+     * @param carStr - The json object contains the information of the car that will be created
+     * @return the id of the created car 
+     *
+     */
     @Transactional
     @POST
     @Consumes("application/json")
@@ -126,6 +147,13 @@ public class CarResource extends Resource{
     	return car;
     }
     
+    /**
+     * This method implements the functionality of updating a car
+     * @param id - The id of the car that will be updated
+     * @param carStr - The json object contains the information of the car that will be updated
+     * @return the id of the updated car
+     *
+     */
     @Transactional
     @PUT
     @Path("{id}")
@@ -151,6 +179,11 @@ public class CarResource extends Resource{
     	return Response.status(Response.Status.OK).entity(response.toString()).build();
     }
 
+    /**
+     * This method implements the functionality of deleting a car
+     * @param id - The id of the car that will be deleted
+     *
+     */
     @Transactional
     @DELETE
     @Path("{id}")
@@ -164,6 +197,12 @@ public class CarResource extends Resource{
         }
     }
     
+    /**
+     * This method implements the functionality of assigning a car to a driver
+     * @param car_id - The id of the car that will be assign to a driver
+     * @param driver_id - The id of the driver that will assign to the car
+     *
+     */
     @Transactional
     @PUT
     @Path("{car_id}/assign-to-driver/{driver_id}")
