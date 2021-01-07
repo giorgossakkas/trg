@@ -3,7 +3,9 @@ Fleet Management System
 
 # User Story
 Microservice a: Implements the crud functionality for the Fleet Management System
+
 Microservice b: Simulates a Car that is driven around a city.
+
 Microservice c: Apply the penalties if the driver not driving in a behave manner.
 
 # Implementation
