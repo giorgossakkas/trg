@@ -18,6 +18,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.json.JSONObject;
 import org.trg.dataobjects.Car;
 import org.trg.dataobjects.Trip;
@@ -46,6 +49,8 @@ public class TripResource extends Resource{
 
     @GET
     @Path("{id}")
+    @Counted(name = "readTrip", description = "How many times the read trip api is called.")
+    @Timed(name = "readTripTimer", description = "A measure of how long it takes to read a trip.", unit = MetricUnits.MILLISECONDS)
     public Response get(@PathParam("id") Long id){
     	Trip trip = tripDao.get(id);
         if (trip == null) 
@@ -56,6 +61,8 @@ public class TripResource extends Resource{
     }
 
     @GET
+    @Counted(name = "listTrips", description = "How many times the list trips api is called.")
+    @Timed(name = "listTripsTimer", description = "A measure of how long it takes to list trips.", unit = MetricUnits.MILLISECONDS)
     public Response list(@QueryParam("sort") List<String> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
             @QueryParam("size") @DefaultValue("20") int pageSize) {
@@ -70,6 +77,8 @@ public class TripResource extends Resource{
 
     @Transactional
     @POST
+    @Counted(name = "addTrip", description = "How many times the add trip api is called.")
+    @Timed(name = "addTripTimer", description = "A measure of how long it takes to add a trip.", unit = MetricUnits.MILLISECONDS)
     public Response add(String tripStr) {
     	    
     	Trip trip = new Trip();
@@ -119,6 +128,8 @@ public class TripResource extends Resource{
     @Transactional
     @PUT
     @Path("{id}")
+    @Counted(name = "updateTrip", description = "How many times the update trip api is called.")
+    @Timed(name = "updateTripTimer", description = "A measure of how long it takes to update a trip.", unit = MetricUnits.MILLISECONDS)
     public Response update(@PathParam("id") Long id, String tripStr) {
         
     	Trip trip = tripDao.get(id);
@@ -140,6 +151,8 @@ public class TripResource extends Resource{
     @Transactional
     @DELETE
     @Path("{id}")
+    @Counted(name = "deleteTrip", description = "How many times the delete trip api is called.")
+    @Timed(name = "deleteTripTimer", description = "A measure of how long it takes to delete a trip.", unit = MetricUnits.MILLISECONDS)
     public void delete(@PathParam("id") Long id) {
     	
     	if (!carDao.delete(id)) 

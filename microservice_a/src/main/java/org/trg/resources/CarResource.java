@@ -27,6 +27,9 @@ import org.trg.interfaces.DriverDao;
 
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 
 /**
  * @author Giorgos Sakkas
@@ -48,6 +51,8 @@ public class CarResource extends Resource{
     @GET
     @Path("{id}")
     @Produces("application/json")
+    @Counted(name = "readCar", description = "How many times the read car api is called.")
+    @Timed(name = "readCarTimer", description = "A measure of how long it takes to get a car.", unit = MetricUnits.MILLISECONDS)
     public Response get(@PathParam("id") Long id){
     	Car car = carDao.get(id);
         if (car == null) 
@@ -59,6 +64,8 @@ public class CarResource extends Resource{
 
     @GET
     @Produces("application/json")
+    @Counted(name = "listCar", description = "How many times the list cars api is called.")
+    @Timed(name = "listCarTimer", description = "A measure of how long it takes to list cars.", unit = MetricUnits.MILLISECONDS)
     public Response list(@QueryParam("sort") List<String> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
             @QueryParam("size") @DefaultValue("20") int pageSize) {
@@ -74,6 +81,8 @@ public class CarResource extends Resource{
     @POST
     @Consumes("application/json")
     @Produces("application/json")
+    @Counted(name = "addCar", description = "How many times the add a car api is called.")
+    @Timed(name = "addCarTimer", description = "A measure of how long it takes to add a car.", unit = MetricUnits.MILLISECONDS)
     public Response add(String carStr) {
     	
     	Car car = new Car();
@@ -122,6 +131,8 @@ public class CarResource extends Resource{
     @Path("{id}")
     @Consumes("application/json")
     @Produces("application/json")
+    @Counted(name = "updateCar", description = "How many times the update a car api is called.")
+    @Timed(name = "updateCarTimer", description = "A measure of how long it takes to update a car.", unit = MetricUnits.MILLISECONDS)
     public Response update(@PathParam("id") Long id, String carStr) {
         
     	Car car = carDao.get(id);
@@ -143,6 +154,8 @@ public class CarResource extends Resource{
     @Transactional
     @DELETE
     @Path("{id}")
+    @Counted(name = "deleteCar", description = "How many times the delete a car api is called.")
+    @Timed(name = "deleteCarTimer", description = "A measure of how long it takes to delete a car.", unit = MetricUnits.MILLISECONDS)
     public void delete(@PathParam("id") Long id) {
     	
     	if (!carDao.delete(id)) 
@@ -156,6 +169,8 @@ public class CarResource extends Resource{
     @Path("{car_id}/assign-to-driver/{driver_id}")
     @Consumes("application/json")
     @Produces("application/json")
+    @Counted(name = "assignCarToDriver", description = "How many times the assign a car to a driver api is called.")
+    @Timed(name = "assignCarToDriverTimer", description = "A measure of how long it takes to assign a car to a driver a car.", unit = MetricUnits.MILLISECONDS)
     public Response assignCarToDriver(@PathParam("car_id") Long car_id, @PathParam("driver_id") Long driver_id) {
         
     	Car car = carDao.get(car_id);

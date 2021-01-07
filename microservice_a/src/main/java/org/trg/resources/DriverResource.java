@@ -18,6 +18,9 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.eclipse.microprofile.metrics.MetricUnits;
+import org.eclipse.microprofile.metrics.annotation.Counted;
+import org.eclipse.microprofile.metrics.annotation.Timed;
 import org.json.JSONObject;
 import org.trg.dataobjects.Driver;
 import org.trg.interfaces.DriverDao;
@@ -41,6 +44,8 @@ public class DriverResource extends Resource{
 
     @GET
     @Path("{id}")
+    @Counted(name = "readDriver", description = "How many times the read driver api is called.")
+    @Timed(name = "readDriverTimer", description = "A measure of how long it takes to read a driver.", unit = MetricUnits.MILLISECONDS)
     public Response get(@PathParam("id") Long id){
     	Driver driver = driverDao.get(id);
         if (driver == null) 
@@ -51,6 +56,8 @@ public class DriverResource extends Resource{
     }
 
     @GET
+    @Counted(name = "listDrivers", description = "How many times the list drivers api is called.")
+    @Timed(name = "listDriversTimer", description = "A measure of how long it takes to list drivers.", unit = MetricUnits.MILLISECONDS)
     public Response list(@QueryParam("sort") List<String> sortQuery,
             @QueryParam("page") @DefaultValue("0") int pageIndex,
             @QueryParam("size") @DefaultValue("20") int pageSize) {
@@ -64,6 +71,8 @@ public class DriverResource extends Resource{
 
     @Transactional
     @POST
+    @Counted(name = "addDriver", description = "How many times the add a driver api is called.")
+    @Timed(name = "addDriverTimer", description = "A measure of how long it takes to add a driver.", unit = MetricUnits.MILLISECONDS)
     public Response add(String driverStr) {
       	
     	Driver driver = new Driver();
@@ -102,6 +111,8 @@ public class DriverResource extends Resource{
     @Transactional
     @PUT
     @Path("{id}")
+    @Counted(name = "updateDriver", description = "How many times the update a driver api is called.")
+    @Timed(name = "updateDriverTimer", description = "A measure of how long it takes to update a driver.", unit = MetricUnits.MILLISECONDS)
     public Response update(@PathParam("id") Long id, String driverStr) {
         
     	Driver driver = driverDao.get(id);
@@ -127,6 +138,8 @@ public class DriverResource extends Resource{
     @Transactional
     @DELETE
     @Path("{id}")
+    @Counted(name = "deleteDriver", description = "How many times the delete a driver api is called.")
+    @Timed(name = "deleteDriverTimer", description = "A measure of how long it takes to delete a driver.", unit = MetricUnits.MILLISECONDS)
     public void delete(@PathParam("id") Long id) {
 
     	if (!driverDao.delete(id)) 
