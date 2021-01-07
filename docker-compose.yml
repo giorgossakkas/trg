@@ -8,9 +8,9 @@ services:
     ports:
       - '8081:8080'
     environment:
-      - QUARKUS_DATASOURCE_USERNAME=jdbc:postgresql://rogue.db.elephantsql.com:5432/eemcedng
-      - QUARKUS_DATASOURCE_PASSWORD=eemcedng
-      - QUARKUS_DATASOURCE_JDBC_URL=PixhX6gac2suncgQV_OED6o0hITSWTYj
+      - QUARKUS_DATASOURCE_USERNAME=eemcedng
+      - QUARKUS_DATASOURCE_PASSWORD=PixhX6gac2suncgQV_OED6o0hITSWTYj
+      - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://rogue.db.elephantsql.com:5432/eemcedng
   microservice_b:
     image: 'trgassessment/microservice_b:latest'
     container_name: microservice_b
