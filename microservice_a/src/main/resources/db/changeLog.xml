@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+	<changeSet author="g_sakkas" id="trg-01">
+    	<createTable tableName="DRIVERS">
+			<column name="id" remarks="Primary Key" type="INTEGER">
+               <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="firstname" remarks="The first name of the driver." type="VARCHAR(256)"/>
+            <column name="lastname" remarks="The last name of the driver." type="VARCHAR(256)"/>
+            <column name="idnumber" remarks="The first name of the driver." type="VARCHAR(32)"/>
+			<column name="createddate" type="TIMESTAMP"/>
+			<column name="modifieddate" type="TIMESTAMP"/>			
+			<column name="isdeleted" type="INTEGER"/>
+			<column defaultValueNumeric="0" name="recversion" type="INTEGER" remarks="The version of the record.">
+            	<constraints nullable="false"/>
+        	</column>
+    	</createTable>
+    	<createTable tableName="CARS">
+			<column name="id" remarks="Primary Key" type="INTEGER">
+               <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="brand" remarks="The brand of the car." type="VARCHAR(256)"/>
+            <column name="licenseplates" remarks="The license plates of the car." type="VARCHAR(32)"/>
+            <column name="type" remarks="The type of the car." type="VARCHAR(32)"/>		
+			<column name="driver_id" remarks="The driver of the car." type="INTEGER"/>
+			<column name="createddate" type="TIMESTAMP"/>
+			<column name="modifieddate" type="TIMESTAMP"/>			
+			<column name="isdeleted" type="INTEGER"/>
+			<column defaultValueNumeric="0" name="recversion" type="INTEGER" remarks="The version of the record.">
+            	<constraints nullable="false"/>
+        	</column>
+    	</createTable>
+    	<addForeignKeyConstraint baseColumnNames="driver_id" baseTableName="CARS" constraintName="FK_CARS_01" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="DRIVERS"/>
+    	<createTable tableName="TRIPS">
+			<column name="id" remarks="Primary Key" type="INTEGER">
+               <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="fromlat" remarks="The starting latitude of the trip." type="DOUBLE(53)"/>
+            <column name="fromlon" remarks="The starting longitude of the trip." type="DOUBLE(53)"/>
+            <column name="tolat" remarks="The ending latitude of the trip." type="DOUBLE(53)"/>
+            <column name="tolon" remarks="The ending longitude of the trip." type="DOUBLE(53)"/>
+			<column name="car_id" remarks="The driver of the car." type="INTEGER"/>
+			<column name="createddate" type="TIMESTAMP"/>
+			<column name="modifieddate" type="TIMESTAMP"/>			
+			<column name="isdeleted" type="INTEGER"/>
+			<column defaultValueNumeric="0" name="recversion" type="INTEGER" remarks="The version of the record.">
+            	<constraints nullable="false"/>
+        	</column>
+    	</createTable>
+    	<addForeignKeyConstraint baseColumnNames="car_id" baseTableName="TRIPS" constraintName="FK_TRIPS_01" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="CARS"/>
+    </changeSet>
+    <changeSet author="g_sakkas" id="trg-02">
+    	    <createSequence sequenceName="cars_id_seq" startValue="1" incrementBy="1"/>
+    	    <createSequence sequenceName="drivers_id_seq" startValue="1" incrementBy="1"/>
+    	    <createSequence sequenceName="trips_id_seq" startValue="1" incrementBy="1"/>
+    </changeSet>
+</databaseChangeLog>
